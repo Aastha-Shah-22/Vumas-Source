@@ -12,7 +12,7 @@ on:
 jobs:
   call_security_pipeline:
     # Use the 'workflow_call' event to reference the reusable workflow
-    uses: your-github-username/security-pipeline-repo/.github/workflows/reusable-security.yml@main
+    uses: nneeraz306/Vumas-Pipeline/.github/workflows/security.yml@main
     
     with:
       # Pass the context of THIS repository to the reusable workflow
