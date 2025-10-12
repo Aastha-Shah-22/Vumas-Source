@@ -1,26 +1,16 @@
-# web-app-vulnerable-project/.github/workflows/caller.yml
+name: Trigger Security Pipeline
 
-name: App Security Pipeline Caller
-
-# Trigger on every push to the main branch
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
-  call_security_pipeline:
-    # Use the 'workflow_call' event to reference the reusable workflow
-    uses: nneeraz306/Vumas-Pipeline/.github/workflows/security.yml@main
-    
-    with:
-      # Pass the context of THIS repository to the reusable workflow
-      target_repo: ${{ github.repository }} 
-      target_branch: ${{ github.ref_name }}
-      # This STAGING_URL should be set as a secret in the web-app-vulnerable-project repo
-      staging_url: ${{ secrets.STAGING_URL }} 
-      
-    secrets:
-      # Pass the required token from THIS repository's secrets
-      github_token: ${{ secrets.GITHUB_TOKEN }}
+  trigger-security-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Security Pipeline in Vumas-Pipeline
+        uses: peter-evans/workflow-dispatch@v1
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          repository: nneeraz306/Vumas-Pipeline
+          workflow: security.yml
