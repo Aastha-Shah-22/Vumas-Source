@@ -1,16 +1,16 @@
-name: Trigger Security Pipeline
+# name: Trigger Security Pipeline
 
-on:
-  push:
-    branches: [ main ]
+# on:
+#   push:
+#     branches: [ main ]
 
-jobs:
-  trigger-security-pipeline:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger Security Pipeline in Vumas-Pipeline
-        uses: peter-evans/workflow-dispatch@v1
-        with:
-          token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          repository: nneeraz306/Vumas-Pipeline
-          workflow: security.yml
+# jobs:
+#   trigger-security-pipeline:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Trigger Security Pipeline in Vumas-Pipeline
+#         uses: peter-evans/workflow-dispatch@v1
+#         with:
+#           token: ${{ secrets.REPO_ACCESS_TOKEN }}
+#           repository: nneeraz306/Vumas-Pipeline
+#           workflow: security.yml
