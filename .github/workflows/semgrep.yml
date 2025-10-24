@@ -11,12 +11,17 @@ on:
   # random HH:MM to avoid a load spike on GitHub Actions at 00:00
   - cron: 51 0 * * *
 name: Semgrep
+
+permissions:
+  contents: read 
+  security-events: write
+  actions: read
+  checks: write
+
 jobs:
   semgrep:
     name: semgrep/ci
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     env:
       SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
     container:
@@ -26,6 +31,7 @@ jobs:
     - run: semgrep ci --sarif > semgrep.sarif
     - name: Upload Semgrep SARIF to Security Tab
       uses: github/codeql-action/upload-sarif@v3
+      if: always()
       with:
         sarif_file: semgrep.sarif
         category: semgrep
