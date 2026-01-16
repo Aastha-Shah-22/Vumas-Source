@@ -6,8 +6,10 @@ on:
         - completed
 
 permissions:
-  contents: read
-  actions: read
+  contents: write    # Needed for the AI agent to push changes
+  pull-requests: write # Needed for the AI agent to create PRs
+  actions: read      # Needed to download artifacts
+  checks: write      # Good practice for security-related workflows
 
 jobs:
   apply-fixes:
