@@ -22,7 +22,7 @@ jobs:
         with:
           name: semgrep-sarif # You must artifact the sarif in semgrep.yml
           run-id: ${{ github.event.workflow_run.id }} # Download the artifact from the workflow run that triggered me.
-          github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          github-token: ${{ github.token }}
           
       - name: Set up Python
         uses: actions/setup-python@v4
