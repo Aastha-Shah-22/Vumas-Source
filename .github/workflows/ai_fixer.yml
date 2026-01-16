@@ -1,0 +1,32 @@
+name: Gemini AI Remediation
+on:
+  workflow_run: #Listens to other workflows
+    workflows: ["Semgrep"] # Trigger after Semgrep finishes
+    types: [completed]
+
+jobs:
+  apply-fixes:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - uses: actions/checkout@v4 #Clones your GitHub repository into the runner
+      
+      # We need the SARIF file from the previous workflow
+      - name: Download SARIF
+        uses: actions/download-artifact@v4
+        with:
+          name: semgrep-sarif # You must artifact the sarif in semgrep.yml
+          
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: pip install PyGithub
+
+      - name: Run AI Agent
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/gemini.py
