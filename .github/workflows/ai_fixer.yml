@@ -2,7 +2,12 @@ name: Gemini AI Remediation
 on:
   workflow_run: #Listens to other workflows
     workflows: ["Semgrep"] # Trigger after Semgrep finishes
-    types: [completed]
+    types: 
+        - completed
+
+permissions:
+  contents: read
+  actions: read
 
 jobs:
   apply-fixes:
@@ -17,6 +22,8 @@ jobs:
         with:
           name: semgrep-sarif # You must artifact the sarif in semgrep.yml
           run-id: ${{ github.event.workflow_run.id }} # Download the artifact from the workflow run that triggered me.
+      - name: Verify file
+        run: ls -l
           
       - name: Set up Python
         uses: actions/setup-python@v4
