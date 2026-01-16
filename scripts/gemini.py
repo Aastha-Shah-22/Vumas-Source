@@ -3,7 +3,7 @@ import json
 from google import genai
 from github import Github
 
-gh = Github(os.getenv("GITHUB_TOKEN"))
+gh = Github(os.getenv("REPO_ACCESS_TOKEN"))
 repo = gh.get_repo(os.getenv("GITHUB_REPOSITORY"))
 
 
