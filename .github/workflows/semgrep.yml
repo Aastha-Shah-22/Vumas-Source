@@ -35,6 +35,11 @@ jobs:
         mkdir -p reports
         semgrep ci --json > reports/semgrep-report.json
 
+    - name: Install AWS CLI
+      run: |
+        apt-get update
+        apt-get install -y awscli
+
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
