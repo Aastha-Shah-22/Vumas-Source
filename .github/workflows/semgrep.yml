@@ -21,17 +21,48 @@ jobs:
   semgrep:
     name: semgrep/ci
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write      # Required for OIDC
+      contents: read       # Required to checkout code
     env:
       SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
     container:
       image: semgrep/semgrep
     steps:
     - uses: actions/checkout@v4
-    - run: semgrep ci --sarif > semgrep.sarif
-    - name: Upload Semgrep SARIF to Security Tab
-      uses: github/codeql-action/upload-sarif@v3
-      if: always()
+    - name: Run Semgrep and generate JSON report
+      run: |
+        mkdir -p reports
+        semgrep ci --json > reports/semgrep-report.json
+
+
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
       with:
-        sarif_file: semgrep.sarif
-        category: semgrep
+        role-to-assume: arn:aws:iam::383845656001:role/GitHubS3Role
+        aws-region: us-east-1
+        role-session-name: GitHubActions-Semgrep
+    
+    - name: Upload reports to S3
+      run: |
+        TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+        BRANCH_NAME=${GITHUB_REF#refs/heads/}
+        
+        aws s3 cp reports/semgrep-report.json \
+          s3://semgrep-json/reports/${BRANCH_NAME}/semgrep-report-${TIMESTAMP}.json \
+          --metadata "branch=${BRANCH_NAME},commit=${GITHUB_SHA},timestamp=${TIMESTAMP}"
+        
+        aws s3 cp reports/semgrep-report.txt \
+          s3://semgrep-json/reports/${BRANCH_NAME}/semgrep-report-${TIMESTAMP}.txt \
+          --metadata "branch=${BRANCH_NAME},commit=${GITHUB_SHA},timestamp=${TIMESTAMP}"
+        
+        echo "Reports uploaded successfully!"
+        
+        echo "Files in S3 bucket:"
+        aws s3 ls s3://semgrep-json/reports/${BRANCH_NAME}/ --recursive
+
+        
 
