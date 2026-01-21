@@ -35,10 +35,6 @@ jobs:
         mkdir -p reports
         semgrep ci --json > reports/semgrep-report.json
 
-
-    - name: Checkout
-      uses: actions/checkout@v1
-
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
